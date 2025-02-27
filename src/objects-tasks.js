@@ -163,8 +163,44 @@ function makeWord(lettersObject) {
  *    sellTickets([25, 25, 50]) => true
  *    sellTickets([25, 100]) => false (The seller does not have enough money to give change.)
  */
-function sellTickets(/* queue */) {
-  throw new Error('Not implemented');
+function sellTickets(queue) {
+  const ticketPrice = 25;
+  const cacheRegister = {
+    25: 0,
+    50: 0,
+    100: 0,
+  };
+
+  const getChange = (payment) => {
+    cacheRegister[payment] += 1;
+
+    const change = payment - ticketPrice;
+
+    if (change === 0) return true;
+
+    if (change === 25 && cacheRegister[25] > 0) {
+      cacheRegister[25] -= 1;
+
+      return true;
+    }
+
+    if (change === 75) {
+      if (cacheRegister[50] > 0 && cacheRegister[25] > 0) {
+        cacheRegister[50] -= 1;
+        cacheRegister[25] -= 1;
+      } else if (cacheRegister[25] >= 3) {
+        cacheRegister[25] -= 3;
+      } else {
+        return false;
+      }
+
+      return true;
+    }
+
+    return false;
+  };
+
+  return queue.every((payment) => getChange(payment));
 }
 
 /**
@@ -213,8 +249,10 @@ function getJSON(obj) {
  *    const r = fromJSON(Circle.prototype, '{"radius":10}');
  *
  */
-function fromJSON(/* proto, json */) {
-  throw new Error('Not implemented');
+function fromJSON(proto, json) {
+  const obj = JSON.parse(json);
+
+  return Object.assign(Object.create(proto), obj);
 }
 
 /**
@@ -279,8 +317,21 @@ function sortCitiesArray(arr) {
  *    "Poland" => ["Lodz"]
  *   }
  */
-function group(/* array, keySelector, valueSelector */) {
-  throw new Error('Not implemented');
+function group(array, keySelector, valueSelector) {
+  const map = new Map();
+
+  array.forEach((item) => {
+    const key = keySelector(item);
+    const value = valueSelector(item);
+
+    if (!map.has(key)) {
+      map.set(key, [value]);
+    } else {
+      map.get(key).push(value);
+    }
+  });
+
+  return map;
 }
 
 /**
